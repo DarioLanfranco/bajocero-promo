@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Pantallas bajas en horizontal (celulares acostados) */
+@custom-variant short (@media (max-height: 620px) and (orientation: landscape));
+
+@layer base {
+	html {
+		-webkit-text-size-adjust: 100%;
+		text-size-adjust: 100%;
+	}
+
+	body {
+		margin: 0;
+		background-color: #eef4fb;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	::selection {
+		background-color: #0077cc;
+		color: #ffffff;
+	}
+}

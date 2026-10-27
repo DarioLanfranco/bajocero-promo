@@ -1,11 +1,278 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import fondo from "../assets/fondo.webp";
+import footerLogo from "../assets/footer-horizontal.webp";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+/**
+ * WhatsApp del local en formato internacional, sin "+" ni espacios.
+ * TODO: reemplazar por el número real de Bajo Cero (Río Cuarto).
+ */
+const WHATSAPP_NUMBER = "5493586006854";
+const WHATSAPP_MESSAGE =
+  "¡Hola! Quiero validar mi 5% de descuento de Bajo Cero. Adjunto la captura de mi cupón 📸";
+
+const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 ---
 
 <Layout>
-	<Welcome />
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href={fondo.src}
+    fetchpriority="high"
+  />
+
+  <main
+    class="relative flex h-dvh min-h-[100svh] w-full flex-col overflow-hidden bg-[#eef4fb]"
+  >
+    <!-- Fondo de marca -->
+    <div
+      class="absolute inset-0 bg-cover bg-center"
+      style={`background-image:url('${fondo.src}')`}
+      aria-hidden="true"
+    >
+    </div>
+
+    <!-- Velo suave para asegurar contraste del contenido -->
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-white/40 via-white/5 to-white/50"
+      aria-hidden="true"
+    >
+    </div>
+
+    <!-- Halo central: baja el ruido del patrón detrás de los textos -->
+    <div class="promo-glow" aria-hidden="true"></div>
+
+    <!-- Capa de nieve (se rellena desde el script) -->
+    <div id="snow" aria-hidden="true"></div>
+
+    <div
+      class="relative z-10 flex h-full flex-col items-center px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] short:pt-3 short:pb-3 sm:px-6 sm:pt-8"
+    >
+      <div
+        class="flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-[clamp(0.75rem,2.4vh,1.5rem)] text-center short:gap-2"
+      >
+        <p
+          class="reveal inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/60 px-3.5 py-1.5 text-[10px] font-semibold tracking-[0.28em] text-[#1b365d]/75 uppercase shadow-sm backdrop-blur-sm short:hidden sm:text-[11px]"
+        >
+          <span aria-hidden="true">❄</span>
+          Beneficio exclusivo
+          <span aria-hidden="true">❄</span>
+        </p>
+
+        <h1 class="reveal reveal-1 flex flex-col items-center">
+          <span
+            class="text-[clamp(1rem,min(4.2vw,4.8vh),1.55rem)] leading-none font-extrabold tracking-[0.2em] text-[#1b365d] uppercase short:text-[0.85rem]"
+          >
+            Ganaste un
+          </span>
+          <span
+            class="mt-2 block text-[clamp(2.15rem,min(10.5vw,11vh),4.25rem)] leading-[0.9] font-black tracking-[-0.03em] text-[#0077cc] uppercase text-balance short:mt-1 short:text-[clamp(1.9rem,min(9vw,9vh),3rem)] sm:mt-3"
+          >
+            5% de descuento
+          </span>
+        </h1>
+
+        <section
+          class="reveal reveal-2 w-full max-w-[22rem] rounded-2xl border border-white/80 bg-white/90 p-5 shadow-xl shadow-[#1b365d]/10 backdrop-blur-sm short:p-4 sm:max-w-md sm:p-6"
+          aria-label="Instrucciones para validar el cupón"
+        >
+          <p
+            class="text-[13px] leading-snug text-[#4a5568] short:text-[12px] sm:text-[15px]"
+          >
+            <span aria-hidden="true">📸</span>{" "}
+            Sacale una captura de pantalla a esta pantalla y enviala por nuestro WhatsApp
+            para validar tu beneficio en el local.
+          </p>
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 flex w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5 text-[13px] leading-none font-bold whitespace-nowrap text-white shadow-lg shadow-[#1b365d]/20 transition duration-200 ease-out hover:bg-[#20bd5a] hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b365d] active:scale-95 short:mt-3 short:py-3 sm:gap-2.5 sm:px-5 sm:text-base"
+          >
+            <svg
+              class="h-5 w-5 shrink-0"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.05-.52-.099-.148-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"
+              ></path>
+            </svg>
+            <span>Validar cupón por WhatsApp</span>
+          </a>
+
+          <p
+            class="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10.5px] leading-relaxed font-medium text-[#666] short:mt-2 sm:text-xs"
+          >
+            <span>Válido por 48 horas desde el escaneo</span>
+            <span class="whitespace-nowrap"
+              ><span aria-hidden="true">•</span> Río Cuarto</span
+            >
+          </p>
+        </section>
+      </div>
+
+      <footer class="mt-3 w-full shrink-0 text-center short:mt-2 sm:mt-4">
+        <img
+          src={footerLogo.src}
+          alt="Bajo Cero"
+          width={footerLogo.width}
+          height={footerLogo.height}
+          decoding="async"
+          draggable="false"
+          class="mx-auto h-auto w-full max-w-[200px] object-contain select-none short:max-w-[150px] md:max-w-[280px]"
+        />
+      </footer>
+    </div>
+  </main>
 </Layout>
+
+<script>
+  const snowLayer = document.getElementById("snow");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (snowLayer && !reduceMotion.matches) {
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+    const flakeCount = isMobile ? 16 : 30;
+    const fragment = document.createDocumentFragment();
+
+    for (let i = 0; i < flakeCount; i += 1) {
+      const flake = document.createElement("span");
+      const size = 3 + Math.random() * 8;
+
+      flake.className = "snowflake";
+      flake.style.setProperty("--x", `${(Math.random() * 100).toFixed(2)}%`);
+      flake.style.setProperty("--size", `${size.toFixed(1)}px`);
+      flake.style.setProperty(
+        "--drift",
+        `${Math.round(Math.random() * 90 - 45)}px`,
+      );
+      flake.style.setProperty(
+        "--dur",
+        `${(10 + Math.random() * 12).toFixed(1)}s`,
+      );
+      flake.style.setProperty(
+        "--delay",
+        `${(-Math.random() * 22).toFixed(1)}s`,
+      );
+      flake.style.setProperty("--o", (0.25 + Math.random() * 0.35).toFixed(2));
+
+      fragment.appendChild(flake);
+    }
+
+    snowLayer.appendChild(fragment);
+
+    // Parallax muy barato: un único transform sobre la capa completa.
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      let frame = 0;
+
+      window.addEventListener(
+        "pointermove",
+        (event) => {
+          if (frame) return;
+
+          frame = window.requestAnimationFrame(() => {
+            const x = (event.clientX / window.innerWidth - 0.5) * 14;
+            const y = (event.clientY / window.innerHeight - 0.5) * 10;
+
+            snowLayer.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+            frame = 0;
+          });
+        },
+        { passive: true },
+      );
+    }
+  }
+</script>
+
+<style is:global>
+  /* ---------- Fondo ---------- */
+  .promo-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 70% 55% at 50% 42%,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.38) 48%,
+      rgba(255, 255, 255, 0) 78%
+    );
+  }
+
+  /* ---------- Nieve ---------- */
+  #snow {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  #snow .snowflake {
+    position: absolute;
+    top: -8vh;
+    left: var(--x);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at 32% 30%,
+      #ffffff 0%,
+      #dbe7f7 45%,
+      #adc7e8 100%
+    );
+    box-shadow: 0 0 5px rgba(116, 154, 204, 0.35);
+    opacity: var(--o);
+    animation: snow-fall var(--dur) linear var(--delay) infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  @keyframes snow-fall {
+    from {
+      transform: translate3d(0, -10vh, 0);
+    }
+    to {
+      transform: translate3d(var(--drift), 115vh, 0);
+    }
+  }
+
+  /* ---------- Entrada del contenido ---------- */
+  .reveal {
+    animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-1 {
+    animation-delay: 90ms;
+  }
+
+  .reveal-2 {
+    animation-delay: 180ms;
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* ---------- Accesibilidad ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    #snow {
+      display: none;
+    }
+
+    .reveal {
+      animation: none;
+    }
+  }
+</style>
