@@ -16,7 +16,7 @@ const durationMs = Math.max(1, durationHours) * 60 * 60 * 1000;
 
 <div
   class:list={[
-    "countdown rounded-xl border border-[#0077cc]/15 bg-[#0077cc]/[0.06] px-3.5 py-2.5 text-center transition-colors duration-300 short:py-1.5",
+    "countdown rounded-xl border border-[#0077cc]/15 bg-[#0077cc]/[0.06] px-3.5 py-2.5 text-center transition-colors duration-300 compact:py-1.5 short:py-1.5",
     className,
   ]}
   data-countdown
@@ -33,7 +33,7 @@ const durationMs = Math.max(1, durationHours) * 60 * 60 * 1000;
   </p>
 
   <p
-    class="countdown__clock mt-0.5 font-mono text-[2rem] leading-none font-bold tracking-tight text-[#1b365d] tabular-nums short:text-[1.5rem] sm:text-[2.2rem]"
+    class="countdown__clock mt-0.5 font-mono text-[2rem] leading-none font-bold tracking-tight text-[#1b365d] tabular-nums compact:text-[1.7rem] short:text-[1.5rem] sm:text-[2.2rem]"
     data-countdown-clock
     role="timer"
     aria-live="off"

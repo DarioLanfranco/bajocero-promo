@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<p
+  class:list={[
+    "mt-3 border-t border-[#1b365d]/10 pt-2.5 text-center text-[10px] leading-[1.5] text-pretty text-[#6b7280] compact:mt-1.5 compact:pt-2 sm:mt-4 sm:pt-3 sm:text-[11px]",
+    className,
+  ]}
+>
+  <strong class="font-semibold text-[#4b5563]">Válido un (1) solo uso</strong> por
+  dispositivo y cliente.{" "}
+  <strong class="font-semibold text-[#4b5563]">Presentar captura</strong> de pantalla al
+  momento de abonar en caja. No acumulable con otras ofertas.
+</p>
