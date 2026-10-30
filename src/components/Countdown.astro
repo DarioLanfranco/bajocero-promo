@@ -1,0 +1,69 @@
+---
+interface Props {
+  durationHours?: number;
+  storageKey?: string;
+  class?: string;
+}
+
+const {
+  durationHours = 48,
+  storageKey = "bajocero.coupon.v1.startedAt",
+  class: className,
+} = Astro.props;
+
+const durationMs = Math.max(1, durationHours) * 60 * 60 * 1000;
+---
+
+<div
+  class:list={[
+    "countdown rounded-xl border border-[#0077cc]/15 bg-[#0077cc]/[0.06] px-3.5 py-2.5 text-center transition-colors duration-300 short:py-1.5",
+    className,
+  ]}
+  data-countdown
+  data-duration-ms={durationMs}
+  data-storage-key={storageKey}
+>
+  <p
+    class="flex items-center justify-center gap-1.5 text-[9px] font-bold tracking-[0.22em] text-[#1b365d]/60 uppercase"
+  >
+    <span
+      class="countdown__dot h-1.5 w-1.5 rounded-full bg-[#25d366] animate-pulse motion-reduce:animate-none"
+      aria-hidden="true"></span>
+    <span data-countdown-label class="countdown__label">Tu cupón vence en</span>
+  </p>
+
+  <p
+    class="countdown__clock mt-0.5 font-mono text-[2rem] leading-none font-bold tracking-tight text-[#1b365d] tabular-nums short:text-[1.5rem] sm:text-[2.2rem]"
+    data-countdown-clock
+    role="timer"
+    aria-live="off"
+    aria-label="Tiempo restante del cupón"
+  >
+    --:--:--
+  </p>
+
+  <span class="sr-only" data-countdown-status role="status" aria-live="polite"></span>
+</div>
+
+<style>
+  .countdown[data-state="expired"] {
+    border-color: #fecaca;
+    background-color: #fef2f2;
+  }
+
+  .countdown[data-state="expired"] .countdown__dot {
+    background-color: #ef4444;
+    animation: none;
+  }
+
+  .countdown[data-state="expired"] .countdown__label {
+    color: #b91c1c;
+  }
+
+  .countdown[data-state="expired"] .countdown__clock {
+    color: #b42318;
+    font-family: inherit;
+    font-size: 1.15rem;
+    letter-spacing: 0;
+  }
+</style>
