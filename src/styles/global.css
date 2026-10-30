@@ -3,6 +3,12 @@
 /* Pantallas bajas en horizontal (celulares acostados) */
 @custom-variant short (@media (max-height: 620px) and (orientation: landscape));
 
+/* Pantallas de poca altura (iPhone SE, Android compactos, landscape) */
+@custom-variant compact (@media (max-height: 700px));
+
+/* Teléfonos muy angostos (320px) */
+@custom-variant tiny (@media (max-width: 359px));
+
 @layer base {
 	html {
 		-webkit-text-size-adjust: 100%;
