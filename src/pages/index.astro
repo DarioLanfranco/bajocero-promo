@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Countdown from "../components/Countdown.astro";
 import fondo from "../assets/fondo.webp";
 import footerLogo from "../assets/footer-horizontal.webp";
 
@@ -76,20 +77,34 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
 
         <section
           class="reveal reveal-2 w-full max-w-[22rem] rounded-2xl border border-white/80 bg-white/90 p-5 shadow-xl shadow-[#1b365d]/10 backdrop-blur-md short:p-4 sm:max-w-md sm:p-6"
-          aria-label="Instrucciones para validar el cupón"
+          aria-label="Cupón de descuento y cómo validarlo"
         >
+          <Countdown />
+
           <p
-            class="text-[13px] leading-snug text-[#4a5568] short:text-[12px] sm:text-[15px]"
+            class="mt-4 text-[13px] leading-snug text-[#4a5568] short:mt-3 short:text-[12px] sm:text-[15px]"
+            data-coupon-instruction
           >
             <span aria-hidden="true">📸</span>{" "}
             Sacale una captura de pantalla a esta pantalla y enviala por nuestro WhatsApp
             para validar tu beneficio en el local.
           </p>
 
+          <p
+            class="mt-4 text-[13px] leading-snug text-[#9f3a38] short:mt-3 short:text-[12px] sm:text-[15px]"
+            data-coupon-expired-message
+            hidden
+          >
+            <span aria-hidden="true">⏳</span>{" "}
+            Este cupón ya expiró. Escaneá un nuevo código QR en el local para obtener otro
+            beneficio.
+          </p>
+
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            data-coupon-cta
             class="mt-4 flex w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5 text-[13px] leading-none font-bold whitespace-nowrap text-white shadow-lg shadow-[#1b365d]/20 transition duration-200 ease-out hover:bg-[#20bd5a] hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b365d] active:scale-95 short:mt-3 short:py-3 sm:gap-2.5 sm:px-5 sm:text-base"
           >
             <svg
@@ -105,6 +120,16 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
             </svg>
             <span>Validar cupón por WhatsApp</span>
           </a>
+
+          <button
+            type="button"
+            data-coupon-expired-cta
+            hidden
+            disabled
+            class="mt-4 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5 text-[13px] leading-none font-bold text-[#6b7280] short:mt-3 short:py-3 sm:text-base"
+          >
+            Cupón expirado
+          </button>
 
           <p
             class="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10.5px] leading-relaxed font-medium text-[#666] short:mt-2 sm:text-xs"
@@ -133,6 +158,8 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
 </Layout>
 
 <script>
+  import { initCountdown } from "../scripts/countdown";
+
   const snowLayer = document.getElementById("snow");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -298,6 +325,38 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     } else {
       startConfetti();
     }
+  }
+
+  // ---------- Cuenta regresiva del cupón ----------
+  const countdownRoot = document.querySelector<HTMLElement>("[data-countdown]");
+  const couponCta = document.querySelector<HTMLElement>("[data-coupon-cta]");
+  const couponExpiredCta = document.querySelector<HTMLElement>(
+    "[data-coupon-expired-cta]",
+  );
+  const couponInstruction = document.querySelector<HTMLElement>(
+    "[data-coupon-instruction]",
+  );
+  const couponExpiredMessage = document.querySelector<HTMLElement>(
+    "[data-coupon-expired-message]",
+  );
+
+  const setCouponExpired = (expired: boolean) => {
+    if (couponCta) couponCta.hidden = expired;
+    if (couponExpiredCta) couponExpiredCta.hidden = !expired;
+    if (couponInstruction) couponInstruction.hidden = expired;
+    if (couponExpiredMessage) couponExpiredMessage.hidden = !expired;
+  };
+
+  if (countdownRoot) {
+    const durationMs = Number(countdownRoot.dataset.durationMs);
+
+    initCountdown({
+      root: countdownRoot,
+      durationMs: durationMs > 0 ? durationMs : undefined,
+      storageKey: countdownRoot.dataset.storageKey || undefined,
+      onReady: (state) => setCouponExpired(state.expired),
+      onExpire: () => setCouponExpired(true),
+    });
   }
 </script>
 
