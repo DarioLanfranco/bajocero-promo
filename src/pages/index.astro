@@ -1,69 +1,27 @@
 ---
+import BrandFooter from "../components/BrandFooter.astro";
+import CouponCard from "../components/CouponCard.astro";
+import PromoBackdrop from "../components/PromoBackdrop.astro";
+import Snowfall from "../components/Snowfall.astro";
+import { CAMPAIGN } from "../config/business";
 import Layout from "../layouts/Layout.astro";
-import Countdown from "../components/Countdown.astro";
-import TrustBox from "../components/TrustBox.astro";
-import LegalNotice from "../components/LegalNotice.astro";
-import fondo from "../assets/fondo.webp";
-import footerLogo from "../assets/footer-horizontal.webp";
-
-/**
- * WhatsApp del local en formato internacional, sin "+" ni espacios.
- * Se usa tanto para el CTA principal como para el soporte del bloque de confianza.
- */
-const WHATSAPP_NUMBER = "5493586006854";
-const WHATSAPP_LABEL = "358 600-6854";
-
-/**
- * Dirección del local..
- */
-const BUSINESS_ADDRESS = "Roberto Payro 913, Río Cuarto";
-const WHATSAPP_MESSAGE =
-  "¡Hola! Quiero validar mi 5% de descuento de Bajo Cero. Adjunto la captura de mi cupón 📸";
-
-const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 ---
 
-<Layout>
-  <link
-    slot="head"
-    rel="preload"
-    as="image"
-    href={fondo.src}
-    fetchpriority="high"
-  />
-
+<Layout noindex>
   <main
     class="relative flex min-h-dvh w-full flex-col overflow-x-hidden bg-[#eef4fb]"
   >
-    <!-- Fondo de marca -->
-    <div
-      class="fixed inset-0 bg-cover bg-center"
-      style={`background-image:url('${fondo.src}')`}
-      aria-hidden="true"
-    >
-    </div>
-
-    <!-- Velo suave para asegurar contraste del contenido -->
-    <div
-      class="fixed inset-0 bg-gradient-to-b from-white/40 via-white/5 to-white/50"
-      aria-hidden="true"
-    >
-    </div>
-
-    <!-- Halo central: baja el ruido del patrón detrás de los textos -->
-    <div class="promo-glow" aria-hidden="true"></div>
-
-    <!-- Capa de nieve (se rellena desde el script) -->
-    <div id="snow" aria-hidden="true"></div>
+    <PromoBackdrop />
+    <Snowfall />
 
     <div
-      class="relative z-10 flex min-h-dvh flex-col items-center px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] compact:pt-3 compact:pb-3 short:pt-3 short:pb-3 sm:px-6 sm:pt-8"
+      class="promo-content relative z-10 flex min-h-dvh flex-col items-center px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:px-6 sm:pt-8"
     >
       <div
-        class="flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-[clamp(0.75rem,2.4vh,1.5rem)] text-center compact:gap-2 short:gap-2"
+        class="promo-stack flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-[clamp(0.75rem,2.4vh,1.5rem)] text-center"
       >
         <p
-          class="reveal inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/60 px-3.5 py-1.5 text-[10px] font-semibold tracking-[0.28em] text-[#1b365d]/75 uppercase shadow-sm backdrop-blur-sm short:hidden tiny:hidden sm:text-[11px]"
+          class="promo-pill reveal inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/60 px-3.5 py-1.5 text-[10px] font-semibold tracking-[0.28em] text-[#1b365d]/75 uppercase shadow-sm backdrop-blur-sm sm:text-[11px]"
         >
           <span aria-hidden="true">❄</span>
           Beneficio exclusivo
@@ -72,408 +30,27 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
 
         <h1 class="reveal reveal-1 flex flex-col items-center">
           <span
-            class="text-[clamp(1rem,min(4.2vw,4.8vh),1.55rem)] leading-none font-extrabold tracking-[0.2em] text-[#1b365d] uppercase short:text-[0.85rem]"
+            class="promo-kicker text-[clamp(1rem,min(4.2vw,4.8vh),1.55rem)] leading-none font-extrabold tracking-[0.2em] text-[#1b365d] uppercase"
           >
             Ganaste un
           </span>
           <span
-            class="mt-2 block text-[clamp(2.15rem,min(10.5vw,11vh),4.25rem)] leading-[0.9] font-black tracking-[-0.03em] text-[#0077cc] uppercase text-balance short:mt-1 short:text-[clamp(1.9rem,min(9vw,9vh),3rem)] sm:mt-3"
+            class="promo-amount mt-2 block text-[clamp(2.15rem,min(10.5vw,11vh),4.25rem)] leading-[0.9] font-black tracking-[-0.03em] text-[#0077cc] uppercase text-balance sm:mt-3"
           >
-            5% de descuento
+            {CAMPAIGN.discountPercent}% de descuento
           </span>
         </h1>
 
-        <section
-          class="reveal reveal-2 w-full max-w-[22rem] rounded-2xl border border-white/80 bg-white/90 p-5 shadow-xl shadow-[#1b365d]/10 backdrop-blur-md compact:p-4 short:p-4 tiny:p-3.5 sm:max-w-md sm:p-6"
-          aria-label="Cupón de descuento y cómo validarlo"
-        >
-          <Countdown />
-
-          <p
-            class="mt-4 text-[13px] leading-snug text-[#4a5568] compact:mt-3 compact:text-[12px] short:mt-3 short:text-[12px] sm:text-[15px]"
-            data-coupon-instruction
-          >
-            <span aria-hidden="true">📸</span>{" "}
-            Sacale una captura de pantalla a esta pantalla y enviala por nuestro WhatsApp
-            para validar tu beneficio en el local.
-          </p>
-
-          <p
-            class="mt-4 text-[13px] leading-snug text-[#9f3a38] compact:mt-3 compact:text-[12px] short:mt-3 short:text-[12px] sm:text-[15px]"
-            data-coupon-expired-message
-            hidden
-          >
-            <span aria-hidden="true">⏳</span>{" "}
-            Este cupón ya expiró. Escaneá un nuevo código QR en el local para obtener otro
-            beneficio.
-          </p>
-
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-coupon-cta
-            class="mt-4 flex w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5 text-[13px] leading-none font-bold whitespace-nowrap text-white shadow-lg shadow-[#1b365d]/20 transition duration-200 ease-out hover:bg-[#20bd5a] hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b365d] active:scale-95 compact:mt-3 compact:py-3 short:mt-3 short:py-3 sm:gap-2.5 sm:px-5 sm:text-base"
-          >
-            <svg
-              class="h-5 w-5 shrink-0"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.05-.52-.099-.148-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"
-              ></path>
-            </svg>
-            <span>Validar cupón por WhatsApp</span>
-          </a>
-
-          <button
-            type="button"
-            data-coupon-expired-cta
-            hidden
-            disabled
-            class="mt-4 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5 text-[13px] leading-none font-bold text-[#6b7280] compact:mt-3 compact:py-3 short:mt-3 short:py-3 sm:text-base"
-          >
-            Cupón expirado
-          </button>
-
-          <p
-            class="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10.5px] leading-relaxed font-medium text-[#666] compact:mt-2 short:mt-2 sm:text-xs"
-          >
-            <span>Válido por 48 horas desde el escaneo</span>
-            <span class="whitespace-nowrap"
-              ><span aria-hidden="true">•</span> Río Cuarto</span
-            >
-          </p>
-
-          <TrustBox
-            address={BUSINESS_ADDRESS}
-            phone={WHATSAPP_NUMBER}
-            phoneLabel={WHATSAPP_LABEL}
-          />
-
-          <LegalNotice />
-        </section>
+        <CouponCard />
       </div>
 
-      <footer class="mt-3 w-full shrink-0 text-center compact:mt-2 short:mt-2 sm:mt-4">
-        <img
-          src={footerLogo.src}
-          alt="Bajo Cero"
-          width={footerLogo.width}
-          height={footerLogo.height}
-          decoding="async"
-          draggable="false"
-          class="mx-auto h-auto w-full max-w-[180px] object-contain select-none compact:max-w-[160px] short:max-w-[150px] tiny:max-w-[140px] sm:max-w-[220px]"
-        />
-      </footer>
+      <BrandFooter />
     </div>
   </main>
 </Layout>
 
 <script>
-  import { initCountdown } from "../scripts/countdown";
+  import { initPromo } from "../scripts/promo";
 
-  const snowLayer = document.getElementById("snow");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-  if (snowLayer && !reduceMotion.matches) {
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-    const flakeCount = isMobile ? 16 : 30;
-    const fragment = document.createDocumentFragment();
-
-    for (let i = 0; i < flakeCount; i += 1) {
-      const flake = document.createElement("span");
-      const size = 3 + Math.random() * 8;
-
-      flake.className = "snowflake";
-      flake.style.setProperty("--x", `${(Math.random() * 100).toFixed(2)}%`);
-      flake.style.setProperty("--size", `${size.toFixed(1)}px`);
-      flake.style.setProperty(
-        "--drift",
-        `${Math.round(Math.random() * 90 - 45)}px`,
-      );
-      flake.style.setProperty(
-        "--dur",
-        `${(10 + Math.random() * 12).toFixed(1)}s`,
-      );
-      flake.style.setProperty(
-        "--delay",
-        `${(-Math.random() * 22).toFixed(1)}s`,
-      );
-      flake.style.setProperty("--o", (0.25 + Math.random() * 0.35).toFixed(2));
-
-      fragment.appendChild(flake);
-    }
-
-    snowLayer.appendChild(fragment);
-
-    // Parallax muy barato: un único transform sobre la capa completa.
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      let frame = 0;
-
-      window.addEventListener(
-        "pointermove",
-        (event) => {
-          if (frame) return;
-
-          frame = window.requestAnimationFrame(() => {
-            const x = (event.clientX / window.innerWidth - 0.5) * 14;
-            const y = (event.clientY / window.innerHeight - 0.5) * 10;
-
-            snowLayer.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-            frame = 0;
-          });
-        },
-        { passive: true },
-      );
-    }
-  }
-
-  // ---------- Explosión de confeti al cargar ----------
-  const launchConfetti = () => {
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-
-    if (!context) return;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    canvas.className = "confetti-canvas";
-    canvas.width = Math.floor(width * dpr);
-    canvas.height = Math.floor(height * dpr);
-    canvas.setAttribute("aria-hidden", "true");
-    context.scale(dpr, dpr);
-    document.body.appendChild(canvas);
-
-    const colors = ["#0077cc", "#1b365d", "#25d366", "#8ec5f0", "#ffffff"];
-    const total = width < 640 ? 70 : 110;
-    const originX = width / 2;
-    const originY = height * 0.42;
-
-    const particles = Array.from({ length: total }, () => {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 5 + Math.random() * 11;
-
-      return {
-        x: originX + (Math.random() - 0.5) * 24,
-        y: originY + (Math.random() - 0.5) * 18,
-        vx: Math.cos(angle) * speed * 1.25,
-        vy: Math.sin(angle) * speed * 0.8 - 2.5,
-        size: 5 + Math.random() * 7,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        rotation: Math.random() * Math.PI,
-        spin: (Math.random() - 0.5) * 0.34,
-        life: 1,
-        decay: 0.006 + Math.random() * 0.005,
-        shape: Math.random() < 0.65 ? "rect" : "circle",
-      };
-    });
-
-    let last = performance.now();
-
-    const frame = (now: number) => {
-      const delta = Math.min(Math.max((now - last) / 16.67, 0.1), 2.2);
-      last = now;
-
-      context.clearRect(0, 0, width, height);
-
-      let alive = 0;
-
-      for (const particle of particles) {
-        if (particle.life <= 0) continue;
-
-        particle.vy += 0.22 * delta;
-        particle.vx *= 0.995;
-        particle.vy *= 0.995;
-        particle.x += particle.vx * delta;
-        particle.y += particle.vy * delta;
-        particle.rotation += particle.spin * delta;
-        particle.life -= particle.decay * delta;
-
-        if (particle.life <= 0) continue;
-
-        alive += 1;
-
-        context.save();
-        context.globalAlpha = Math.min(particle.life, 1);
-        context.translate(particle.x, particle.y);
-        context.rotate(particle.rotation);
-        context.fillStyle = particle.color;
-
-        if (particle.shape === "rect") {
-          context.fillRect(
-            -particle.size / 2,
-            -particle.size / 4,
-            particle.size,
-            particle.size / 2,
-          );
-        } else {
-          context.beginPath();
-          context.arc(0, 0, particle.size / 2.4, 0, Math.PI * 2);
-          context.fill();
-        }
-
-        context.restore();
-      }
-
-      if (alive > 0) {
-        window.requestAnimationFrame(frame);
-      } else {
-        canvas.remove();
-      }
-    };
-
-    window.requestAnimationFrame(frame);
-  };
-
-  if (!reduceMotion.matches) {
-    const startConfetti = () => window.setTimeout(launchConfetti, 180);
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", startConfetti, {
-        once: true,
-      });
-    } else {
-      startConfetti();
-    }
-  }
-
-  // ---------- Cuenta regresiva del cupón ----------
-  const countdownRoot = document.querySelector<HTMLElement>("[data-countdown]");
-  const couponCta = document.querySelector<HTMLElement>("[data-coupon-cta]");
-  const couponExpiredCta = document.querySelector<HTMLElement>(
-    "[data-coupon-expired-cta]",
-  );
-  const couponInstruction = document.querySelector<HTMLElement>(
-    "[data-coupon-instruction]",
-  );
-  const couponExpiredMessage = document.querySelector<HTMLElement>(
-    "[data-coupon-expired-message]",
-  );
-
-  const setCouponExpired = (expired: boolean) => {
-    if (couponCta) couponCta.hidden = expired;
-    if (couponExpiredCta) couponExpiredCta.hidden = !expired;
-    if (couponInstruction) couponInstruction.hidden = expired;
-    if (couponExpiredMessage) couponExpiredMessage.hidden = !expired;
-  };
-
-  if (countdownRoot) {
-    const durationMs = Number(countdownRoot.dataset.durationMs);
-
-    initCountdown({
-      root: countdownRoot,
-      durationMs: durationMs > 0 ? durationMs : undefined,
-      storageKey: countdownRoot.dataset.storageKey || undefined,
-      onReady: (state) => setCouponExpired(state.expired),
-      onExpire: () => setCouponExpired(true),
-    });
-  }
+  initPromo();
 </script>
-
-<style is:global>
-  /* ---------- Fondo ---------- */
-  .promo-glow {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 70% 55% at 50% 42%,
-      rgba(255, 255, 255, 0.82) 0%,
-      rgba(255, 255, 255, 0.38) 48%,
-      rgba(255, 255, 255, 0) 78%
-    );
-  }
-
-  /* ---------- Nieve ---------- */
-  #snow {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  #snow .snowflake {
-    position: absolute;
-    top: -8vh;
-    left: var(--x);
-    width: var(--size);
-    height: var(--size);
-    border-radius: 9999px;
-    background: radial-gradient(
-      circle at 32% 30%,
-      #ffffff 0%,
-      #dbe7f7 45%,
-      #adc7e8 100%
-    );
-    box-shadow: 0 0 5px rgba(116, 154, 204, 0.35);
-    opacity: var(--o);
-    animation: snow-fall var(--dur) linear var(--delay) infinite;
-    will-change: transform;
-    backface-visibility: hidden;
-  }
-
-  @keyframes snow-fall {
-    from {
-      transform: translate3d(0, -10vh, 0);
-    }
-    to {
-      transform: translate3d(var(--drift), 115vh, 0);
-    }
-  }
-
-  /* ---------- Confeti ---------- */
-  .confetti-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 30;
-    display: block;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
-  /* ---------- Entrada del contenido ---------- */
-  .reveal {
-    animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .reveal-1 {
-    animation-delay: 90ms;
-  }
-
-  .reveal-2 {
-    animation-delay: 180ms;
-  }
-
-  @keyframes rise-in {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 14px, 0);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
-  /* ---------- Accesibilidad ---------- */
-  @media (prefers-reduced-motion: reduce) {
-    #snow {
-      display: none;
-    }
-
-    .confetti-canvas {
-      display: none;
-    }
-
-    .reveal {
-      animation: none;
-    }
-  }
-</style>

@@ -1,30 +1,25 @@
 ---
+import { COUPON_DURATION_MS } from "../config/business";
+import { formatRemaining, splitRemaining } from "../scripts/countdown";
+
 interface Props {
-  durationHours?: number;
-  storageKey?: string;
   class?: string;
 }
 
-const {
-  durationHours = 48,
-  storageKey = "bajocero.coupon.v1.startedAt",
-  class: className,
-} = Astro.props;
-
-const durationMs = Math.max(1, durationHours) * 60 * 60 * 1000;
+const { class: className } = Astro.props;
+const initialClock = formatRemaining(splitRemaining(COUPON_DURATION_MS));
 ---
 
 <div
   class:list={[
-    "countdown rounded-xl border border-[#0077cc]/15 bg-[#0077cc]/[0.06] px-3.5 py-2.5 text-center transition-colors duration-300 compact:py-1.5 short:py-1.5",
+    "countdown rounded-xl border border-[#0077cc]/15 bg-[#0077cc]/[0.06] px-3.5 py-2.5 text-center transition-colors duration-300",
     className,
   ]}
   data-countdown
-  data-duration-ms={durationMs}
-  data-storage-key={storageKey}
+  data-state="active"
 >
   <p
-    class="flex items-center justify-center gap-1.5 text-[9px] font-bold tracking-[0.22em] text-[#1b365d]/60 uppercase"
+    class="flex items-center justify-center gap-1.5 text-[9px] font-bold tracking-[0.22em] text-[#1b365d]/80 uppercase"
   >
     <span
       class="countdown__dot h-1.5 w-1.5 rounded-full bg-[#25d366] animate-pulse motion-reduce:animate-none"
@@ -33,16 +28,20 @@ const durationMs = Math.max(1, durationHours) * 60 * 60 * 1000;
   </p>
 
   <p
-    class="countdown__clock mt-0.5 font-mono text-[2rem] leading-none font-bold tracking-tight text-[#1b365d] tabular-nums compact:text-[1.7rem] short:text-[1.5rem] sm:text-[2.2rem]"
+    class="countdown__clock mt-0.5 font-mono text-[2rem] leading-none font-bold tracking-tight text-[#1b365d] tabular-nums sm:text-[2.2rem]"
     data-countdown-clock
     role="timer"
     aria-live="off"
     aria-label="Tiempo restante del cupón"
   >
-    --:--:--
+    {initialClock}
   </p>
 
-  <span class="sr-only" data-countdown-status role="status" aria-live="polite"></span>
+  <span
+    class="sr-only"
+    data-countdown-status
+    role="status"
+    aria-live="polite"></span>
 </div>
 
 <style>

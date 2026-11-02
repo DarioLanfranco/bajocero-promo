@@ -1,0 +1,21 @@
+---
+import { Image } from "astro:assets";
+import footerLogo from "../assets/footer-horizontal.webp";
+import { BUSINESS } from "../config/business";
+import { LOGO_QUALITY, LOGO_SIZES, LOGO_WIDTHS } from "../config/media";
+---
+
+<footer class="brand-footer mt-3 w-full shrink-0 text-center sm:mt-4">
+  <Image
+    src={footerLogo}
+    alt={BUSINESS.name}
+    widths={LOGO_WIDTHS}
+    sizes={LOGO_SIZES}
+    format="webp"
+    quality={LOGO_QUALITY}
+    decoding="async"
+    draggable="false"
+    loading="eager"
+    class="brand-logo mx-auto h-auto w-full max-w-[180px] object-contain select-none sm:max-w-[220px]"
+  />
+</footer>

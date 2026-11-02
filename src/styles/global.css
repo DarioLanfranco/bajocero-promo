@@ -1,29 +1,125 @@
 @import "tailwindcss";
-
-/* Pantallas bajas en horizontal (celulares acostados) */
-@custom-variant short (@media (max-height: 620px) and (orientation: landscape));
-
-/* Pantallas de poca altura (iPhone SE, Android compactos, landscape) */
-@custom-variant compact (@media (max-height: 700px));
-
-/* Teléfonos muy angostos (320px) */
-@custom-variant tiny (@media (max-width: 359px));
+@import "./decor.css";
 
 @layer base {
-	html {
-		-webkit-text-size-adjust: 100%;
-		text-size-adjust: 100%;
-	}
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
-	body {
-		margin: 0;
-		background-color: #eef4fb;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
+  body {
+    margin: 0;
+    background-color: #eef4fb;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-	::selection {
-		background-color: #0077cc;
-		color: #ffffff;
-	}
+  ::selection {
+    background-color: #0077cc;
+    color: #ffffff;
+  }
+}
+
+/*
+ * Ajustes por altura y por ancho mínimo. Vive en una capa posterior a
+ * `utilities` para que la precedencia no dependa del orden de emisión de
+ * Tailwind: estas reglas siempre ganan sobre `sm:` y sobre las utilidades base.
+ */
+@layer overrides {
+  @media (max-height: 700px) {
+    .promo-content {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .promo-stack {
+      gap: 0.5rem;
+    }
+
+    .coupon-card {
+      padding: 1rem;
+    }
+
+    .coupon-instruction {
+      margin-top: 0.75rem;
+      font-size: 12px;
+    }
+
+    .coupon-expired-message {
+      margin-top: 0.75rem;
+      font-size: 12px;
+    }
+
+    .coupon-cta {
+      margin-top: 0.75rem;
+      padding-block: 0.75rem;
+    }
+
+    .coupon-validity {
+      margin-top: 0.5rem;
+    }
+
+    .trust-box {
+      margin-top: 0.625rem;
+      padding: 0.5rem 0.625rem;
+    }
+
+    .trust-box__list {
+      font-size: 11.5px;
+    }
+
+    .trust-box__list > li:not(:last-child) {
+      margin-block-end: 0.25rem;
+    }
+
+    .countdown {
+      padding-block: 0.375rem;
+    }
+
+    .countdown__clock {
+      font-size: 1.7rem;
+    }
+
+    .legal-notice {
+      margin-top: 0.375rem;
+      padding-top: 0.5rem;
+    }
+
+    .brand-footer {
+      margin-top: 0.5rem;
+    }
+
+    .brand-logo {
+      max-width: 160px;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .coupon-card {
+      padding: 0.875rem;
+    }
+
+    .brand-logo {
+      max-width: 140px;
+    }
+
+    .promo-pill {
+      display: none;
+    }
+  }
+
+  @media (max-height: 620px) and (orientation: landscape) {
+    .promo-pill {
+      display: none;
+    }
+
+    .promo-kicker {
+      font-size: 0.85rem;
+    }
+
+    .promo-amount {
+      margin-top: 0.25rem;
+      font-size: clamp(1.9rem, min(9vw, 9vh), 3rem);
+    }
+  }
 }

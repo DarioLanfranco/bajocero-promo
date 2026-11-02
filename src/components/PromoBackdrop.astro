@@ -1,0 +1,37 @@
+<div class="promo-backdrop" aria-hidden="true">
+  <div class="promo-backdrop__image"></div>
+  <div
+    class="absolute inset-0 bg-gradient-to-b from-white/40 via-white/5 to-white/50"
+  >
+  </div>
+  <div class="promo-backdrop__glow"></div>
+</div>
+
+<style>
+  .promo-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .promo-backdrop__image {
+    position: absolute;
+    inset: 0;
+    background-image: url("/media/fondo.webp?v=1");
+    background-position: center;
+    background-size: cover;
+  }
+
+  .promo-backdrop__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 70% 55% at 50% 42%,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.38) 48%,
+      rgba(255, 255, 255, 0) 78%
+    );
+  }
+</style>
