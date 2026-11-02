@@ -1,36 +1,82 @@
 ---
-import '../styles/global.css';
+import {
+  BUSINESS,
+  CAMPAIGN,
+  COUPON_DURATION_LABEL,
+} from "../config/business";
+import { OG_IMAGE_HEIGHT, OG_IMAGE_PATH, OG_IMAGE_WIDTH } from "../config/media";
+import {
+  CONTENT_SECURITY_POLICY_META,
+  REFERRER_POLICY,
+} from "../config/security";
+import "../styles/global.css";
 
 interface Props {
-	title?: string;
-	description?: string;
+  title?: string;
+  description?: string;
+  noindex?: boolean;
 }
 
+const defaultTitle = `${BUSINESS.name} | Ganaste un ${CAMPAIGN.discountPercent}% de descuento`;
+const defaultDescription = `Escaneaste el QR de ${BUSINESS.name}: tenés un ${CAMPAIGN.discountPercent}% de descuento. Sacá una captura y validá tu cupón por WhatsApp. Válido por ${COUPON_DURATION_LABEL} en ${BUSINESS.city}, ${BUSINESS.province}.`;
+
 const {
-	title = 'Bajo Cero | Ganaste un 5% de descuento',
-	description =
-		'Escaneaste el QR de Bajo Cero: tenés un 5% de descuento. Sacá una captura y validá tu cupón por WhatsApp. Válido por 48 horas en Río Cuarto.',
+  title = defaultTitle,
+  description = defaultDescription,
+  noindex = false,
 } = Astro.props;
+
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).href
+  : undefined;
+const ogImage = Astro.site
+  ? new URL(OG_IMAGE_PATH, Astro.site).href
+  : OG_IMAGE_PATH;
 ---
 
 <!doctype html>
 <html lang="es">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-		<meta name="theme-color" content="#eef4fb" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" sizes="any" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<meta property="og:type" content="website" />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:locale" content="es_AR" />
-		<slot name="head" />
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#eef4fb" />
+    <meta name="color-scheme" content="light" />
+    <meta name="referrer" content={REFERRER_POLICY} />
+    {
+      import.meta.env.PROD && (
+        <meta
+          http-equiv="Content-Security-Policy"
+          content={CONTENT_SECURITY_POLICY_META}
+        />
+      )
+    }
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:url" content={canonical ?? Astro.url.pathname} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
+    <meta
+      property="og:image:alt"
+      content={`${BUSINESS.name} — ${CAMPAIGN.discountPercent}% de descuento`}
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>

@@ -1,0 +1,24 @@
+---
+import { WHATSAPP_URL } from "../config/business";
+import WhatsappIcon from "./ui/WhatsappIcon.astro";
+---
+
+<a
+  href={WHATSAPP_URL}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-coupon-cta
+  class="coupon-cta mt-4 flex w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3.5 text-[13px] leading-none font-bold whitespace-nowrap text-[#0b2e1a] shadow-lg shadow-[#1b365d]/20 transition duration-200 ease-out hover:bg-[#20bd5a] hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b365d] active:scale-95 sm:gap-2.5 sm:px-5 sm:text-base"
+>
+  <WhatsappIcon class="h-5 w-5" />
+  <span>Validar cupón por WhatsApp</span>
+</a>
+
+<button
+  type="button"
+  data-coupon-expired-cta
+  disabled
+  class="coupon-cta mt-4 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3.5 text-[13px] leading-none font-bold text-[#4b5563] sm:text-base"
+>
+  Cupón expirado
+</button>

@@ -1,0 +1,69 @@
+---
+import { BUSINESS, COUPON_DURATION_LABEL } from "../config/business";
+import Countdown from "./Countdown.astro";
+import CouponCta from "./CouponCta.astro";
+import LegalNotice from "./LegalNotice.astro";
+import TrustBox from "./TrustBox.astro";
+---
+
+<section
+  class="coupon-card reveal reveal-2 w-full max-w-[22rem] rounded-2xl border border-white/80 bg-white/90 p-5 shadow-xl shadow-[#1b365d]/10 backdrop-blur-md sm:max-w-md sm:p-6"
+  aria-label="Cupón de descuento y cómo validarlo"
+  data-coupon-state
+  data-state="active"
+>
+  <Countdown />
+
+  <p
+    class="coupon-instruction mt-4 text-[13px] leading-snug text-[#4a5568] sm:text-[15px]"
+    data-coupon-instruction
+  >
+    <span aria-hidden="true">📸</span>{" "}
+    Sacale una captura de pantalla a esta pantalla y enviala por nuestro WhatsApp
+    para validar tu beneficio en el local.
+  </p>
+
+  <p
+    class="coupon-expired-message mt-4 text-[13px] leading-snug text-[#9f3a38] sm:text-[15px]"
+    data-coupon-expired-message
+  >
+    <span aria-hidden="true">⏳</span>{" "}
+    Este cupón ya expiró. Escaneá un nuevo código QR en el local para obtener otro
+    beneficio.
+  </p>
+
+  <CouponCta />
+
+  <p
+    class="coupon-validity mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10.5px] leading-relaxed font-medium text-[#666] sm:text-xs"
+  >
+    <span>Válido por {COUPON_DURATION_LABEL} desde el escaneo</span>
+    <span class="whitespace-nowrap"
+      ><span aria-hidden="true">•</span> {BUSINESS.city}</span
+    >
+  </p>
+
+  <TrustBox />
+
+  <LegalNotice />
+</section>
+
+<style>
+  .coupon-card :global([data-coupon-expired-cta]),
+  .coupon-card :global([data-coupon-expired-message]) {
+    display: none;
+  }
+
+  .coupon-card[data-state="expired"] :global([data-coupon-cta]),
+  .coupon-card[data-state="expired"] :global([data-coupon-instruction]) {
+    display: none;
+  }
+
+  .coupon-card[data-state="expired"] :global([data-coupon-expired-cta]) {
+    display: flex;
+  }
+
+  .coupon-card[data-state="expired"] :global([data-coupon-expired-message]) {
+    display: block;
+  }
+</style>

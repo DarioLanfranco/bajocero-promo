@@ -1,14 +1,3 @@
-/**
- * Lógica de la cuenta regresiva del cupón.
- *
- * Las funciones puras (cálculo y formateo) no tocan el DOM ni el storage,
- * lo que las hace fáciles de testear. El controlador `initCountdown` es el
- * único punto que conoce el documento y el reloj del sistema.
- */
-
-export const COUPON_DURATION_MS = 48 * 60 * 60 * 1000;
-export const STORAGE_KEY = "bajocero.coupon.v1.startedAt";
-
 export interface SafeStorage {
   get(key: string): string | null;
   set(key: string, value: string): void;
@@ -32,50 +21,43 @@ export interface CountdownController {
   getState: () => CountdownState;
 }
 
-export interface InitCountdownOptions {
+export interface CountdownOptions {
   root: HTMLElement;
-  durationMs?: number;
-  storageKey?: string;
+  durationMs: number;
+  storageKey: string;
   now?: () => number;
-  onReady?: (state: CountdownState) => void;
-  onExpire?: () => void;
+  onStateChange?: (state: CountdownState) => void;
 }
 
-const isPositiveNumber = (value: number): boolean =>
-  Number.isFinite(value) && value > 0;
+const CLOCK_SKEW_MS = 60_000;
 
-/**
- * Diferencia real entre la expiración y el momento actual.
- * Se recalcula siempre desde `Date.now()` para no acumular drift.
- */
+const isPositiveNumber = (value: number): boolean => Number.isFinite(value) && value > 0;
+
 export const getRemainingMs = (
   startedAt: number,
   now: number,
-  durationMs: number = COUPON_DURATION_MS,
+  durationMs: number,
 ): number => Math.max(0, startedAt + durationMs - now);
 
 /**
- * Recupera el primer acceso. Si el valor guardado es inválido, está en el
- * futuro (reloj del sistema cambiado) o no existe, arranca ahora.
+ * Un valor guardado en el futuro solo puede venir de un reloj desincronizado
+ * o de una manipulación del storage. En ambos casos se ancla a `now` para
+ * evitar ventanas negativas; la validez real del cupón no depende de este dato.
  */
 export const resolveStartedAt = (
   stored: string | null,
   now: number,
+  skewMs: number = CLOCK_SKEW_MS,
 ): number => {
   if (!stored) return now;
 
   const parsed = Number(stored);
 
-  if (!isPositiveNumber(parsed) || parsed > now) return now;
+  if (!isPositiveNumber(parsed) || parsed > now + skewMs) return now;
 
-  return parsed;
+  return Math.min(parsed, now);
 };
 
-/**
- * Convierte milisegundos restantes en partes de reloj.
- * Usa `ceil` para que el primer render muestre 48:00:00 y el último
- * segundo se vea como 00:00:01 hasta expirar exactamente en cero.
- */
 export const splitRemaining = (remainingMs: number): RemainingTime => {
   const totalSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
 
@@ -104,11 +86,6 @@ const createMemoryStorage = (): SafeStorage => {
   };
 };
 
-/**
- * Si el storage del navegador falla en cualquier momento (modo privado,
- * cookies bloqueadas, quota), el valor igual queda en memoria durante la
- * sesión. Así el contador nunca rompe la landing.
- */
 const createWebStorage = (storage: Storage): SafeStorage => {
   const fallback = new Map<string, string>();
 
@@ -126,33 +103,37 @@ const createWebStorage = (storage: Storage): SafeStorage => {
       try {
         storage.setItem(key, value);
       } catch {
-        // Sin persistencia real: seguimos con el fallback en memoria.
+        // Persistencia no disponible: la sesión sigue con el fallback.
       }
     },
   };
 };
 
+const DEFAULT_STORAGE_CANDIDATES = [
+  () => window.localStorage,
+  () => window.sessionStorage,
+] as const;
+
 /**
- * localStorage -> sessionStorage -> memoria.
- * Nunca lanza: el primer acceso siempre queda registrado de alguna forma.
+ * localStorage -> sessionStorage -> memoria. El probe usa la misma clave que
+ * el consumidor para no validar un namespace distinto del que se va a usar.
  */
-export const createSafeStorage = (): SafeStorage => {
-  const candidates = [
-    () => window.localStorage,
-    () => window.sessionStorage,
-  ];
+export const createSafeStorage = (
+  storageKey: string,
+  candidates: ReadonlyArray<() => Storage> = DEFAULT_STORAGE_CANDIDATES,
+): SafeStorage => {
+  const probeKey = `${storageKey}:probe`;
 
   for (const getStorage of candidates) {
     try {
       const storage = getStorage();
-      const probeKey = `${STORAGE_KEY}:probe`;
 
       storage.setItem(probeKey, "1");
       storage.removeItem(probeKey);
 
       return createWebStorage(storage);
     } catch {
-      // Probamos el siguiente mecanismo disponible.
+      // Se prueba el siguiente mecanismo disponible.
     }
   }
 
@@ -169,18 +150,21 @@ const emptyState = (): CountdownState => ({
   remainingMs: 0,
 });
 
-/**
- * Controlador del contador. Devuelve `destroy` para liberar listeners y
- * timers, y `getState` para consultar el último estado renderizado.
- */
 export const initCountdown = ({
   root,
-  durationMs = COUPON_DURATION_MS,
-  storageKey = STORAGE_KEY,
+  durationMs,
+  storageKey,
   now = Date.now,
-  onReady,
-  onExpire,
-}: InitCountdownOptions): CountdownController => {
+  onStateChange,
+}: CountdownOptions): CountdownController => {
+  if (!isPositiveNumber(durationMs)) {
+    throw new RangeError("initCountdown: durationMs debe ser un número positivo");
+  }
+
+  if (!storageKey) {
+    throw new RangeError("initCountdown: storageKey es obligatorio");
+  }
+
   const clock = root.querySelector<HTMLElement>("[data-countdown-clock]");
   const label = root.querySelector<HTMLElement>("[data-countdown-label]");
   const status = root.querySelector<HTMLElement>("[data-countdown-status]");
@@ -192,24 +176,22 @@ export const initCountdown = ({
     };
   }
 
-  const safeDuration = isPositiveNumber(durationMs)
-    ? durationMs
-    : COUPON_DURATION_MS;
-  const storage = createSafeStorage();
+  const storage = createSafeStorage(storageKey);
   const startedAt = resolveStartedAt(storage.get(storageKey), now());
-  const expiresAt = startedAt + safeDuration;
+  const expiresAt = startedAt + durationMs;
 
   storage.set(storageKey, String(startedAt));
 
   let state: CountdownState = {
-    ...splitRemaining(safeDuration),
+    ...splitRemaining(durationMs),
     startedAt,
     expiresAt,
-    remainingMs: safeDuration,
+    remainingMs: durationMs,
   };
   let timeoutId: number | undefined;
   let destroyed = false;
-  let expireNotified = false;
+  let lastExpired: boolean | null = null;
+  let lastAnnouncedMinute = -1;
 
   const render = (remainingMs: number) => {
     const remaining = splitRemaining(remainingMs);
@@ -227,27 +209,27 @@ export const initCountdown = ({
       clock.textContent = "Expirado";
       clock.setAttribute("aria-label", "Cupón expirado");
 
-      if (!expireNotified) {
-        expireNotified = true;
-
-        if (status) {
-          status.textContent =
-            "Tu cupón expiró. Escaneá un nuevo código QR en el local.";
-        }
-
-        onExpire?.();
+      if (status) {
+        status.textContent = "Tu cupón expiró. Escaneá un nuevo código QR en el local.";
       }
+    } else {
+      root.dataset.state = "active";
+      label.textContent = "Tu cupón vence en";
+      clock.textContent = formatRemaining(remaining);
 
-      return;
+      if (remaining.minutes !== lastAnnouncedMinute) {
+        lastAnnouncedMinute = remaining.minutes;
+        clock.setAttribute(
+          "aria-label",
+          `Quedan ${remaining.hours} horas, ${remaining.minutes} minutos`,
+        );
+      }
     }
 
-    root.dataset.state = "active";
-    label.textContent = "Tu cupón vence en";
-    clock.textContent = formatRemaining(remaining);
-    clock.setAttribute(
-      "aria-label",
-      `Quedan ${remaining.hours} horas, ${remaining.minutes} minutos y ${remaining.seconds} segundos`,
-    );
+    if (remaining.expired !== lastExpired) {
+      lastExpired = remaining.expired;
+      onStateChange?.(state);
+    }
   };
 
   const clearTimer = () => {
@@ -261,7 +243,7 @@ export const initCountdown = ({
     if (destroyed) return;
 
     const current = now();
-    const remainingMs = getRemainingMs(startedAt, current, safeDuration);
+    const remainingMs = getRemainingMs(startedAt, current, durationMs);
 
     render(remainingMs);
 
@@ -270,11 +252,7 @@ export const initCountdown = ({
       return;
     }
 
-    // Nos alineamos al borde del segundo para que el reloj no se atrase.
-    timeoutId = window.setTimeout(
-      tick,
-      Math.max(1, 1000 - (current % 1000)),
-    );
+    timeoutId = window.setTimeout(tick, Math.max(1, 1000 - (current % 1000)));
   };
 
   const handleVisibility = () => {
@@ -285,20 +263,25 @@ export const initCountdown = ({
     if (!document.hidden) tick();
   };
 
+  const handlePageHide = () => {
+    clearTimer();
+  };
+
   const destroy = () => {
+    if (destroyed) return;
+
     destroyed = true;
     clearTimer();
     document.removeEventListener("visibilitychange", handleVisibility);
-    window.removeEventListener("pagehide", clearTimer);
+    window.removeEventListener("pagehide", handlePageHide);
     window.removeEventListener("pageshow", handleVisibility);
   };
 
   document.addEventListener("visibilitychange", handleVisibility);
-  window.addEventListener("pagehide", clearTimer);
+  window.addEventListener("pagehide", handlePageHide);
   window.addEventListener("pageshow", handleVisibility);
 
   tick();
-  onReady?.(state);
 
   return {
     destroy,

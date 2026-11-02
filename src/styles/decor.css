@@ -1,0 +1,81 @@
+[data-snow-layer] {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+[data-snow-layer] [data-snowflake] {
+  position: absolute;
+  top: -8vh;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 32% 30%,
+    #ffffff 0%,
+    #dbe7f7 45%,
+    #adc7e8 100%
+  );
+  box-shadow: 0 0 5px rgba(116, 154, 204, 0.35);
+  opacity: var(--o);
+  animation: bc-snow-fall var(--dur) linear var(--delay) infinite;
+}
+
+@keyframes bc-snow-fall {
+  from {
+    transform: translate3d(0, -10vh, 0);
+  }
+
+  to {
+    transform: translate3d(var(--drift), 115vh, 0);
+  }
+}
+
+[data-confetti] {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.reveal {
+  animation: bc-rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reveal-1 {
+  animation-delay: 90ms;
+}
+
+.reveal-2 {
+  animation-delay: 180ms;
+}
+
+@keyframes bc-rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-snow-layer],
+  [data-confetti] {
+    display: none;
+  }
+
+  .reveal {
+    animation: none;
+  }
+}
